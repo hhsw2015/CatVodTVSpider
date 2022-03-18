@@ -3,6 +3,7 @@ package com.github.catvod.parser;
 import android.util.Base64;
 
 import com.github.catvod.crawler.SpiderDebug;
+import com.github.catvod.utils.Misc;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -117,6 +118,7 @@ public class MixDemo {
                 JSONObject webResult = new JSONObject();
                 webResult.put("url", "proxy://do=parseMix&flag=" + flag + "&url=" + Base64.encodeToString(url.getBytes(), Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP));
                 webResult.put("parse", 1);
+                webResult.put("ua", Misc.UaWinChrome);
                 return webResult;
             }
         } catch (Throwable th) {

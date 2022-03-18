@@ -983,6 +983,7 @@ public class AppYs extends Spider {
                         if (content.contains("<html")) {
                             result.put("parse", 1);
                             result.put("playUrl", "");
+                            result.put("ua", Misc.UaWinChrome);
                             result.put("url", realurl);
                         } else {
                             JSONObject obj = new JSONObject(content);
@@ -1019,11 +1020,13 @@ public class AppYs extends Spider {
                         if (sniffer) {
                             result.put("parse", 1);
                             result.put("playUrl", "");
+                            result.put("ua", Misc.UaWinChrome);
                             result.put("url", playurl);
                         } else {
                             if (playurl.split("url=")[1].contains("http")) {
                                 result.put("parse", 1);
                                 result.put("playUrl", "");
+                                result.put("ua", Misc.UaWinChrome);
                                 result.put("url", "http://1.117.152.239:39000/?url=" + playurl.split("url=")[1]);
                             } else if (playurl.split("url=")[1].contains("renrenmi")) {
                                 result.put("parse", 1);
@@ -1075,6 +1078,7 @@ public class AppYs extends Spider {
                         } else if (playurl.split("url=")[1].contains("http")) {
                             result.put("parse", 1);
                             result.put("playUrl", "");
+                            result.put("ua", Misc.UaWinChrome);
                             result.put("url", "http://1.117.152.239:39000/?url=" + playurl.split("url=")[1]);
                         } else if (playurl.split("url=")[1].contains("renrenmi")) {
                             result.put("parse", 1);
