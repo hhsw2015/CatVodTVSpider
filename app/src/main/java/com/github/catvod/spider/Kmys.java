@@ -64,8 +64,8 @@ public class Kmys extends Spider {
 
     private HashMap<String, String> getHeaders(String url) {
         HashMap<String, String> headers = new HashMap<>();
-        headers.put("versionNumber", "14");
-        headers.put("versionName", "1.1.1");
+        headers.put("versionNumber", "330");
+        headers.put("versionName", "3.3.0");
         headers.put("device", device);
         headers.put("appId", appId);
         headers.put("platformId", "7");
@@ -93,11 +93,10 @@ public class Kmys extends Spider {
     public String homeContent(boolean filter) {
         try {
             checkDomain();
-            String url = staticDomain + "/static/" + appId + "/config/lib.json";
+            String url = staticDomain + "/static/" + appId + "/config/lib-new.json";
             String content = OkHttpUtil.string(url, getHeaders(url));
             JSONObject jsonObject = new JSONObject(content).getJSONObject("data");
 
-            JSONArray regions = jsonObject.getJSONArray("region");
             JSONArray years = jsonObject.getJSONArray("year");
             JSONArray types = jsonObject.getJSONArray("types");
 
@@ -115,7 +114,7 @@ public class Kmys extends Spider {
                 newCls.put("type_name", typeName);
                 classes.put(newCls);
 
-                JSONArray children = item.getJSONArray("children");
+                JSONArray tags = item.getJSONArray("tags");
                 JSONArray extendsAll = new JSONArray();
                 // 类型
                 JSONObject newTypeExtend = new JSONObject();
@@ -126,8 +125,8 @@ public class Kmys extends Spider {
                 kv.put("n", "全部");
                 kv.put("v", "-1");
                 newTypeExtendKV.put(kv);
-                for (int j = 0; j < children.length(); j++) {
-                    JSONObject child = children.getJSONObject(j);
+                for (int j = 0; j < tags.length(); j++) {
+                    JSONObject child = tags.getJSONObject(j);
                     kv = new JSONObject();
                     kv.put("n", child.getString("typeName"));
                     kv.put("v", child.getString("typeId"));
@@ -155,27 +154,25 @@ public class Kmys extends Spider {
                 newTypeExtend.put("value", newTypeExtendKV);
                 extendsAll.put(newTypeExtend);
                 // 地区
-                if (typeName.trim().equals("电影")) {
-                    newTypeExtend = new JSONObject();
-                    newTypeExtend.put("key", "area");
-                    newTypeExtend.put("name", "地区");
-                    newTypeExtendKV = new JSONArray();
+                JSONArray regions = item.getJSONArray("children");
+                newTypeExtend = new JSONObject();
+                newTypeExtend.put("key", "area");
+                newTypeExtend.put("name", "地区");
+                newTypeExtendKV = new JSONArray();
+                kv = new JSONObject();
+                kv.put("n", "全部");
+                kv.put("v", "-1");
+                newTypeExtendKV.put(kv);
+                for (int j = 0; j < regions.length(); j++) {
+                    JSONObject child = regions.getJSONObject(j);
                     kv = new JSONObject();
-                    kv.put("n", "全部");
-                    kv.put("v", "-1");
+                    kv.put("n", child.getString("typeName"));
+                    kv.put("v", child.getString("typeId"));
                     newTypeExtendKV.put(kv);
-                    for (int j = 0; j < regions.length(); j++) {
-                        String area = regions.getString(j).trim();
-                        if (area.isEmpty())
-                            continue;
-                        kv = new JSONObject();
-                        kv.put("n", area);
-                        kv.put("v", area);
-                        newTypeExtendKV.put(kv);
-                    }
-                    newTypeExtend.put("value", newTypeExtendKV);
-                    extendsAll.put(newTypeExtend);
                 }
+                newTypeExtend.put("value", newTypeExtendKV);
+                extendsAll.put(newTypeExtend);
+
                 // 年份
                 newTypeExtend = new JSONObject();
                 newTypeExtend.put("key", "year");
@@ -246,25 +243,24 @@ public class Kmys extends Spider {
             checkDomain();
             JSONObject result = new JSONObject();
 
-            String url = apiDomain + "/videolibrary/" + appId + "/" + tid;
+            String url = apiDomain + "/videolibrary/v2/" + appId + "/" + tid;
             extend = extend == null ? new HashMap<>() : extend;
-
+            if (!extend.containsKey("area")) {
+                extend.put("area", "-1");
+            }
             if (!extend.containsKey("type")) {
                 extend.put("type", "-1");
             }
             if (!extend.containsKey("sort")) {
                 extend.put("sort", "2");
             }
-            if (!extend.containsKey("area")) {
-                extend.put("area", "-1");
-            }
             if (!extend.containsKey("year")) {
                 extend.put("year", "-1");
             }
-
+            url += "/" + extend.get("area");
             url += "/" + extend.get("type");
             url += "/" + extend.get("sort");
-            url += "/" + extend.get("area");
+            url += "/-1";
             url += "/" + extend.get("year");
             url += "/-1/" + pg + ".json";
 
